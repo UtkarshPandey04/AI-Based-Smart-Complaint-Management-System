@@ -1,24 +1,38 @@
 const axios = require("axios");
 const Complaint = require("../models/Complaint");
 
-// Call Anthropic Claude API
+const OPENROUTER_MODEL =
+  process.env.OPENROUTER_MODEL || "anthropic/claude-3-haiku";
+
+// Call OpenRouter AI API
 const callAnthropicAI = async (prompt) => {
-  const response = await axios.post(
-    "https://api.anthropic.com/v1/messages",
-    {
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 1024,
-      messages: [{ role: "user", content: prompt }],
-    },
-    {
-      headers: {
-        "x-api-key": process.env.ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
-        "Content-Type": "application/json",
+  try {
+    const response = await axios.post(
+      "https://openrouter.ai/api/v1/chat/completions",
+      {
+        model: OPENROUTER_MODEL,
+        max_tokens: 1024,
+        messages: [{ role: "user", content: prompt }],
       },
-    }
-  );
-  return response.data.content[0].text;
+      {
+        headers: {
+          "Authorization": `Bearer ${process.env.ANTHROPIC_API_KEY}`,
+          "HTTP-Referer": "http://localhost:5000",
+          "X-Title": "Smart Complaint System",
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data.choices[0].message.content;
+  } catch (error) {
+    console.error("OpenRouter API Error:", {
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      data: error.response?.data,
+      message: error.message,
+    });
+    throw error;
+  }
 };
 
 // Parse AI JSON response safely
@@ -102,7 +116,7 @@ Priority guidelines:
     if (error.response?.status === 401) {
       return res.status(500).json({
         success: false,
-        message: "Invalid Anthropic API key. Check your .env configuration.",
+        message: "Invalid API key. Check your ANTHROPIC_API_KEY in .env configuration.",
       });
     }
     next(error);
