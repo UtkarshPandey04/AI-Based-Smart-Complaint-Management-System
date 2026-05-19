@@ -5,9 +5,11 @@ services:
     name: smart-complaint-backend
     env: node
     rootDir: backend
-    buildCommand: npm install
+    buildCommand: npm ci
     startCommand: node server.js
     envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
       - key: NODE_ENV
         value: production
       - key: MONGODB_URI
@@ -24,9 +26,11 @@ services:
     name: smart-complaint-frontend
     env: static
     rootDir: frontend
-    buildCommand: npm install && npm run build
+    buildCommand: npm ci && CI=false npm run build
     staticPublishPath: ./build
     envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
       - key: REACT_APP_API_URL
         sync: false
     routes:

@@ -76,11 +76,12 @@ git push -u origin main
 3. Configure:
    - **Name:** `smart-complaint-frontend`
    - **Root Directory:** `frontend`
-   - **Build Command:** `npm install && npm run build`
-   - **Publish Directory:** `build`
+   - **Build Command:** `npm ci && CI=false npm run build`
+   - **Publish Directory:** `build` (do not set this to `/index.html`)
 4. Add Environment Variable:
    ```
    REACT_APP_API_URL = https://smart-complaint-backend.onrender.com/api
+   NODE_VERSION = 20.11.1
    ```
 5. Add Redirect/Rewrite Rule:
    - Source: `/*`
