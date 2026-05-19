@@ -16,16 +16,18 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/submit" element={<SubmitComplaint />} />
-          <Route path="/complaints" element={<ComplaintsList />} />
-          <Route path="/complaints/:id" element={<ComplaintDetail />} />
-        </Routes>
-        <ToastContainer position="top-right" autoClose={3000} />
+        <div className="app-shell">
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/submit" element={<SubmitComplaint />} />
+            <Route path="/complaints" element={<ComplaintsList />} />
+            <Route path="/complaints/:id" element={<ComplaintDetail />} />
+          </Routes>
+          <ToastContainer position="top-right" autoClose={3000} />
+        </div>
       </Router>
     </AuthProvider>
   );

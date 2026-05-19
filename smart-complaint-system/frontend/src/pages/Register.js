@@ -16,7 +16,7 @@ const Register = () => {
     setLoading(true);
     try {
       await register(form.name, form.email, form.password);
-      toast.success("Registration successful! Welcome aboard.");
+      toast.success("Registration successful");
       navigate("/complaints");
     } catch (err) {
       toast.error(err.response?.data?.message || "Registration failed");
@@ -26,45 +26,59 @@ const Register = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h2 style={styles.title}>🔐 Create Account</h2>
-        <p style={styles.sub}>Register to submit and track complaints</p>
+    <main className="auth-page">
+      <section className="auth-card">
+        <span className="eyebrow">Create access</span>
+        <h1>Register</h1>
+        <p className="muted">Create an account to submit and track complaints.</p>
+
         <form onSubmit={handleSubmit}>
-          {["name", "email", "password"].map((field) => (
-            <div key={field} style={styles.group}>
-              <label style={styles.label}>{field.charAt(0).toUpperCase() + field.slice(1)}</label>
-              <input
-                type={field === "password" ? "password" : field === "email" ? "email" : "text"}
-                name={field}
-                value={form[field]}
-                onChange={handleChange}
-                style={styles.input}
-                placeholder={`Enter your ${field}`}
-                required
-              />
-            </div>
-          ))}
-          <button type="submit" style={styles.btn} disabled={loading}>
-            {loading ? "Registering..." : "Register"}
+          <div className="field">
+            <label>Name</label>
+            <input
+              className="input"
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              placeholder="Your full name"
+              required
+            />
+          </div>
+          <div className="field">
+            <label>Email</label>
+            <input
+              className="input"
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              placeholder="name@example.com"
+              required
+            />
+          </div>
+          <div className="field">
+            <label>Password</label>
+            <input
+              className="input"
+              type="password"
+              name="password"
+              value={form.password}
+              onChange={handleChange}
+              placeholder="Choose a secure password"
+              required
+            />
+          </div>
+          <button type="submit" className="btn btn-primary" disabled={loading}>
+            {loading ? "Creating account..." : "Register"}
           </button>
         </form>
-        <p style={styles.foot}>Already have an account? <Link to="/login">Login</Link></p>
-      </div>
-    </div>
-  );
-};
 
-const styles = {
-  container: { minHeight: "80vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f0f4f8" },
-  card: { background: "#fff", padding: "2.5rem", borderRadius: "12px", boxShadow: "0 4px 20px rgba(0,0,0,0.1)", width: "100%", maxWidth: "420px" },
-  title: { margin: "0 0 0.25rem", color: "#1e3a5f", fontSize: "1.6rem" },
-  sub: { color: "#666", marginBottom: "1.5rem", fontSize: "0.9rem" },
-  group: { marginBottom: "1.2rem" },
-  label: { display: "block", marginBottom: "0.3rem", color: "#444", fontWeight: "600", fontSize: "0.9rem" },
-  input: { width: "100%", padding: "0.7rem", border: "1.5px solid #ddd", borderRadius: "8px", fontSize: "1rem", boxSizing: "border-box", outline: "none" },
-  btn: { width: "100%", padding: "0.8rem", background: "#1e3a5f", color: "#fff", border: "none", borderRadius: "8px", fontSize: "1rem", cursor: "pointer", fontWeight: "600" },
-  foot: { textAlign: "center", marginTop: "1rem", fontSize: "0.9rem", color: "#666" },
+        <p className="auth-foot">
+          Already registered? <Link to="/login">Login</Link>
+        </p>
+      </section>
+    </main>
+  );
 };
 
 export default Register;

@@ -16,7 +16,7 @@ const Login = () => {
     setLoading(true);
     try {
       await login(form.email, form.password);
-      toast.success("Login successful!");
+      toast.success("Login successful");
       navigate("/complaints");
     } catch (err) {
       toast.error(err.response?.data?.message || "Invalid email or password");
@@ -26,45 +26,48 @@ const Login = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h2 style={styles.title}>🔑 Login</h2>
-        <p style={styles.sub}>Sign in to manage your complaints</p>
+    <main className="auth-page">
+      <section className="auth-card">
+        <span className="eyebrow">Welcome back</span>
+        <h1>Login</h1>
+        <p className="muted">Sign in to manage complaints and run AI analysis.</p>
+
         <form onSubmit={handleSubmit}>
-          {["email", "password"].map((field) => (
-            <div key={field} style={styles.group}>
-              <label style={styles.label}>{field.charAt(0).toUpperCase() + field.slice(1)}</label>
-              <input
-                type={field === "password" ? "password" : "email"}
-                name={field}
-                value={form[field]}
-                onChange={handleChange}
-                style={styles.input}
-                placeholder={`Enter your ${field}`}
-                required
-              />
-            </div>
-          ))}
-          <button type="submit" style={styles.btn} disabled={loading}>
+          <div className="field">
+            <label>Email</label>
+            <input
+              className="input"
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              placeholder="name@example.com"
+              required
+            />
+          </div>
+          <div className="field">
+            <label>Password</label>
+            <input
+              className="input"
+              type="password"
+              name="password"
+              value={form.password}
+              onChange={handleChange}
+              placeholder="Enter your password"
+              required
+            />
+          </div>
+          <button type="submit" className="btn btn-primary" disabled={loading}>
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
-        <p style={styles.foot}>Don't have an account? <Link to="/register">Register</Link></p>
-      </div>
-    </div>
-  );
-};
 
-const styles = {
-  container: { minHeight: "80vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f0f4f8" },
-  card: { background: "#fff", padding: "2.5rem", borderRadius: "12px", boxShadow: "0 4px 20px rgba(0,0,0,0.1)", width: "100%", maxWidth: "420px" },
-  title: { margin: "0 0 0.25rem", color: "#1e3a5f", fontSize: "1.6rem" },
-  sub: { color: "#666", marginBottom: "1.5rem", fontSize: "0.9rem" },
-  group: { marginBottom: "1.2rem" },
-  label: { display: "block", marginBottom: "0.3rem", color: "#444", fontWeight: "600", fontSize: "0.9rem" },
-  input: { width: "100%", padding: "0.7rem", border: "1.5px solid #ddd", borderRadius: "8px", fontSize: "1rem", boxSizing: "border-box" },
-  btn: { width: "100%", padding: "0.8rem", background: "#1e3a5f", color: "#fff", border: "none", borderRadius: "8px", fontSize: "1rem", cursor: "pointer", fontWeight: "600" },
-  foot: { textAlign: "center", marginTop: "1rem", fontSize: "0.9rem", color: "#666" },
+        <p className="auth-foot">
+          New here? <Link to="/register">Create an account</Link>
+        </p>
+      </section>
+    </main>
+  );
 };
 
 export default Login;
