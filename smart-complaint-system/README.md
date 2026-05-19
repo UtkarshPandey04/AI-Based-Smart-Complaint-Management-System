@@ -1,7 +1,7 @@
 # 🏛️ AI-Based Smart Complaint Management System
 
 > **B.Tech 4th Semester | AI Driven Full Stack Development (AI308B)**  
-> Built with MERN Stack + Anthropic Claude AI
+> Built with MERN Stack + openRouter.ai
 
 ---
 
