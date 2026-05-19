@@ -1,0 +1,300 @@
+{
+  "info": {
+    "_postman_id": "smart-complaint-ai-collection",
+    "name": "Smart Complaint AI - Complete Test Suite",
+    "description": "Complete API test collection for AI-Based Smart Complaint Management System (AI308B ESE)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:5000/api", "type": "string" },
+    { "key": "token", "value": "", "type": "string" },
+    { "key": "complaint_id", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "1. Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "http://localhost:5000/", "protocol": "http", "host": ["localhost"], "port": "5000", "path": [""] }
+      }
+    },
+    {
+      "name": "AUTH",
+      "item": [
+        {
+          "name": "Register User",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+            "pm.test('Token exists', () => { const j = pm.response.json(); pm.expect(j.data.token).to.be.a('string'); pm.collectionVariables.set('token', j.data.token); });"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Rahul Kumar\",\n  \"email\": \"rahul@gmail.com\",\n  \"password\": \"password123\"\n}" },
+            "url": { "raw": "{{base_url}}/auth/register", "host": ["{{base_url}}"], "path": ["auth", "register"] }
+          }
+        },
+        {
+          "name": "Register Admin",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Admin User\",\n  \"email\": \"admin@gmail.com\",\n  \"password\": \"admin123\",\n  \"role\": \"admin\"\n}" },
+            "url": { "raw": "{{base_url}}/auth/register", "host": ["{{base_url}}"], "path": ["auth", "register"] }
+          }
+        },
+        {
+          "name": "Login (Valid)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+            "pm.test('Token received', () => { const j = pm.response.json(); pm.expect(j.data.token).to.exist; pm.collectionVariables.set('token', j.data.token); });"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"rahul@gmail.com\",\n  \"password\": \"password123\"\n}" },
+            "url": { "raw": "{{base_url}}/auth/login", "host": ["{{base_url}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Login (Wrong Password)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status is 401 Unauthorized', () => pm.response.to.have.status(401));",
+            "pm.test('Error message exists', () => { const j = pm.response.json(); pm.expect(j.success).to.be.false; });"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"rahul@gmail.com\",\n  \"password\": \"wrongpassword\"\n}" },
+            "url": { "raw": "{{base_url}}/auth/login", "host": ["{{base_url}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Get Profile (Protected)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+            "pm.test('Returns user data', () => { const j = pm.response.json(); pm.expect(j.data.email).to.exist; });"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/auth/profile", "host": ["{{base_url}}"], "path": ["auth", "profile"] }
+          }
+        },
+        {
+          "name": "Get Profile (No Token)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status is 401', () => pm.response.to.have.status(401));",
+            "pm.test('Access denied message', () => { const j = pm.response.json(); pm.expect(j.message).to.include('denied'); });"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/auth/profile", "host": ["{{base_url}}"], "path": ["auth", "profile"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "COMPLAINTS",
+      "item": [
+        {
+          "name": "Add Complaint (Valid - Water)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+            "pm.test('Complaint saved', () => { const j = pm.response.json(); pm.expect(j.success).to.be.true; pm.collectionVariables.set('complaint_id', j.data._id); });"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Rahul Kumar\",\n  \"email\": \"rahul@gmail.com\",\n  \"title\": \"Water Leakage Issue\",\n  \"description\": \"Water pipeline has been damaged near the central market area causing road flooding and inconvenience to hundreds of residents in the locality.\",\n  \"category\": \"Water Supply\",\n  \"location\": \"Ghaziabad\"\n}" },
+            "url": { "raw": "{{base_url}}/complaints", "host": ["{{base_url}}"], "path": ["complaints"] }
+          }
+        },
+        {
+          "name": "Add Complaint (Electricity - High Priority)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Priya Sharma\",\n  \"email\": \"priya@gmail.com\",\n  \"title\": \"Power Outage for 3 Days\",\n  \"description\": \"Complete electricity failure in our area for past 3 days. Transformers have burnt and local hospital is running on generator. This is an emergency situation requiring immediate attention.\",\n  \"category\": \"Electricity\",\n  \"location\": \"Noida Sector 15\"\n}" },
+            "url": { "raw": "{{base_url}}/complaints", "host": ["{{base_url}}"], "path": ["complaints"] }
+          }
+        },
+        {
+          "name": "Add Complaint (Garbage)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Amit Verma\",\n  \"email\": \"amit@gmail.com\",\n  \"title\": \"Garbage Not Collected for a Week\",\n  \"description\": \"The garbage collection vehicle has not visited our colony for the past 7 days. Garbage is piling up and causing foul smell and unhygienic conditions.\",\n  \"category\": \"Sanitation & Garbage\",\n  \"location\": \"Ghaziabad\"\n}" },
+            "url": { "raw": "{{base_url}}/complaints", "host": ["{{base_url}}"], "path": ["complaints"] }
+          }
+        },
+        {
+          "name": "Add Complaint - Missing Title (Error)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status is 400 Bad Request', () => pm.response.to.have.status(400));",
+            "pm.test('Validation error returned', () => { const j = pm.response.json(); pm.expect(j.success).to.be.false; pm.expect(j.message).to.equal('Validation failed'); });"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@gmail.com\",\n  \"description\": \"No title is provided in this request body.\",\n  \"category\": \"Electricity\",\n  \"location\": \"Delhi\"\n}" },
+            "url": { "raw": "{{base_url}}/complaints", "host": ["{{base_url}}"], "path": ["complaints"] }
+          }
+        },
+        {
+          "name": "Add Complaint - Invalid Email (Error)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status is 400 Bad Request', () => pm.response.to.have.status(400));",
+            "pm.test('Email validation error', () => { const j = pm.response.json(); pm.expect(j.errors[0].field).to.equal('email'); });"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"invalid-email-format\",\n  \"title\": \"Road pothole issue near market\",\n  \"description\": \"There is a large pothole on the main road causing accidents.\",\n  \"category\": \"Roads & Infrastructure\",\n  \"location\": \"Noida\"\n}" },
+            "url": { "raw": "{{base_url}}/complaints", "host": ["{{base_url}}"], "path": ["complaints"] }
+          }
+        },
+        {
+          "name": "Get All Complaints",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+            "pm.test('Returns array of complaints', () => { const j = pm.response.json(); pm.expect(j.data).to.be.an('array'); });"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/complaints", "host": ["{{base_url}}"], "path": ["complaints"] }
+          }
+        },
+        {
+          "name": "Get Complaints - Filter by Category",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+            "pm.test('All results match category', () => { const j = pm.response.json(); j.data.forEach(c => pm.expect(c.category).to.equal('Water Supply')); });"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/complaints?category=Water Supply", "host": ["{{base_url}}"], "path": ["complaints"], "query": [{ "key": "category", "value": "Water Supply" }] }
+          }
+        },
+        {
+          "name": "Get Complaints - Pagination",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/complaints?page=1&limit=5", "host": ["{{base_url}}"], "path": ["complaints"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "5" }] }
+          }
+        },
+        {
+          "name": "Search by Location",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+            "pm.test('Returns count', () => { const j = pm.response.json(); pm.expect(j.count).to.be.a('number'); });"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/complaints/search?location=Ghaziabad", "host": ["{{base_url}}"], "path": ["complaints", "search"], "query": [{ "key": "location", "value": "Ghaziabad" }] }
+          }
+        },
+        {
+          "name": "Get Complaint by ID",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+            "pm.test('Returns complaint data', () => { const j = pm.response.json(); pm.expect(j.data._id).to.exist; });"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/complaints/{{complaint_id}}", "host": ["{{base_url}}"], "path": ["complaints", "{{complaint_id}}"] }
+          }
+        },
+        {
+          "name": "Update Status to In Progress",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+            "pm.test('Status updated', () => { const j = pm.response.json(); pm.expect(j.data.status).to.equal('In Progress'); });"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"In Progress\"\n}" },
+            "url": { "raw": "{{base_url}}/complaints/{{complaint_id}}", "host": ["{{base_url}}"], "path": ["complaints", "{{complaint_id}}"] }
+          }
+        },
+        {
+          "name": "Update Status - No Token (Error)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status is 401 Unauthorized', () => pm.response.to.have.status(401));",
+            "pm.test('Access denied', () => { const j = pm.response.json(); pm.expect(j.success).to.be.false; });"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"Resolved\"\n}" },
+            "url": { "raw": "{{base_url}}/complaints/{{complaint_id}}", "host": ["{{base_url}}"], "path": ["complaints", "{{complaint_id}}"] }
+          }
+        },
+        {
+          "name": "Delete Complaint",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+            "pm.test('Complaint deleted', () => { const j = pm.response.json(); pm.expect(j.success).to.be.true; });"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/complaints/{{complaint_id}}", "host": ["{{base_url}}"], "path": ["complaints", "{{complaint_id}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI ANALYSIS",
+      "item": [
+        {
+          "name": "AI Analyze - Water Complaint",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+            "pm.test('AI returns priority and department', () => { const j = pm.response.json(); pm.expect(j.data.priority).to.be.oneOf(['Low','Medium','High','Critical']); pm.expect(j.data.department).to.be.a('string'); pm.expect(j.data.summary).to.be.a('string'); pm.expect(j.data.autoResponse).to.be.a('string'); });"
+          ], "type": "text/javascript" }}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Water Leakage Issue\",\n  \"description\": \"Water pipeline has been severely damaged near the central market area. Water is flooding the road and causing major disruption to traffic and daily life of hundreds of residents in the locality for the past 2 days.\",\n  \"category\": \"Water Supply\",\n  \"location\": \"Ghaziabad\"\n}" },
+            "url": { "raw": "{{base_url}}/ai/analyze", "host": ["{{base_url}}"], "path": ["ai", "analyze"] }
+          }
+        },
+        {
+          "name": "AI Analyze - Electricity Emergency",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Complete Power Failure - Hospital Affected\",\n  \"description\": \"There has been a complete power failure in our sector for the past 72 hours. The local government hospital is running on emergency backup generators which are also failing. Patients in ICU are at risk. This is a critical emergency requiring immediate response.\",\n  \"category\": \"Electricity\",\n  \"location\": \"Noida Sector 15\"\n}" },
+            "url": { "raw": "{{base_url}}/ai/analyze", "host": ["{{base_url}}"], "path": ["ai", "analyze"] }
+          }
+        },
+        {
+          "name": "AI Analyze - Garbage Complaint",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Garbage Not Collected\",\n  \"description\": \"The municipal garbage collection van has not visited our colony for the past 7 days. Garbage is piling up on the streets causing a foul smell, unhygienic conditions, and attracting stray animals. Multiple residents have complained but no action has been taken.\",\n  \"category\": \"Sanitation & Garbage\",\n  \"location\": \"Ghaziabad\"\n}" },
+            "url": { "raw": "{{base_url}}/ai/analyze", "host": ["{{base_url}}"], "path": ["ai", "analyze"] }
+          }
+        },
+        {
+          "name": "AI Analyze by Complaint ID",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/ai/analyze/{{complaint_id}}", "host": ["{{base_url}}"], "path": ["ai", "analyze", "{{complaint_id}}"] }
+          }
+        }
+      ]
+    }
+  ]
+}
